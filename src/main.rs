@@ -17,6 +17,10 @@ pub extern "C" fn _start() -> ! {
 
     #[cfg(test)]
     test_main();
+    //trigering the page fault to check
+    unsafe {
+        *(0xdeadbeef as *mut u8) = 67;
+    };
 
     println!("It did not crash");
     loop {}
