@@ -11,9 +11,14 @@ use zero::println;
 pub extern "C" fn _start() -> ! {
     println!("Hello World{}", "!");
 
+    //invoking a breakpoint function
+    zero::init();
+    x86_64::instructions::interrupts::int3();
+
     #[cfg(test)]
     test_main();
 
+    println!("It did not crash");
     loop {}
 }
 

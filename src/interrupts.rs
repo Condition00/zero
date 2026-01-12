@@ -1,0 +1,22 @@
+use crate::println;
+use lazy_static::lazy_static;
+
+use x86_64::structures::idt::{InterruptDescriptorTable, InterruptStackFrame};
+
+lazy_static! {
+    static ref IDT: InterruptDescriptorTable = {
+        let mut idt = InterruptDescriptorTable::new();
+        idt.breakpoint.set_handler_fn(breakpoint_handler);
+        idt
+    };
+}
+
+pub fn init_idt() {
+    IDT.load();
+}
+
+//we could allocate our idt on a heap use Box and convert it into a 'static' refernce but havent
+//implemented a heap yet
+extern "x86-interrupt" fn breakpoint_handler(stack_frame: InterruptStackFrame) {
+    println!("EXCEPTION: BREAKPOINT\n{:#?}", stack_frame);
+}
