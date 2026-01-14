@@ -1,6 +1,7 @@
 use crate::gdt;
 use crate::println;
 use lazy_static::lazy_static;
+use x86_64::instructions::port::Port;
 use x86_64::structures::idt::{InterruptDescriptorTable, InterruptStackFrame};
 
 use crate::print;
@@ -16,6 +17,7 @@ pub static PICS: spin::Mutex<ChainedPics> =
 #[repr(u8)]
 pub enum InterruptIndex {
     Timer = PIC_1_OFFSET,
+    KeyBoard,
 }
 
 impl InterruptIndex {
@@ -38,6 +40,7 @@ lazy_static! {
                 .set_stack_index(gdt::DOUBLE_FAULT_IST_INDEX);
         }
         idt[InterruptIndex::Timer.as_usize()].set_handler_fn(time_interrupt_handler);
+        idt[InterruptIndex::KeyBoard.as_usize()].set_handler_fn(keyboard_interrupt_handler);
         idt
     };
 }
@@ -46,6 +49,33 @@ pub fn init_idt() {
 }
 //we could allocate our idt on a heap use Box and convert it into a 'static' refernce but havent
 //implemented a heap yet
+
+extern "x86-interrupt" fn keyboard_interrupt_handler(_stack_frame: InterruptStackFrame) {
+    use x86_64::instructions::port::Port;
+
+    let mut port = Port::new(0x60);
+    let scancode: u8 = unsafe { port.read() };
+    let key = match scancode {
+        0x02 => Some('1'),
+        0x03 => Some('2'),
+        0x04 => Some('3'),
+        0x05 => Some('4'),
+        0x06 => Some('5'),
+        0x07 => Some('6'),
+        0x08 => Some('7'),
+        0x09 => Some('8'),
+        0x0a => Some('9'),
+        0x0b => Some('0'),
+        _ => None,
+    };
+    if let Some(key) = key {
+        print!("{}", key);
+    }
+    unsafe {
+        PICS.lock()
+            .notify_end_of_interrupt(InterruptIndex::KeyBoard.as_u8());
+    }
+}
 
 extern "x86-interrupt" fn time_interrupt_handler(_stack_frame: InterruptStackFrame) {
     print!(".");
