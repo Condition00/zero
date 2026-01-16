@@ -24,7 +24,6 @@ fn kernel_main(_boot_info: &'static BootInfo) -> ! {
     let mut frame_allocator = unsafe { BootInfoFrameAllocator::init(&_boot_info.memory_map) };
 
     allocator::init_heap(&mut mapper, &mut frame_allocator).expect("heap inititalization failed");
-    //map on unused Page
 
     #[cfg(test)]
     test_main();
