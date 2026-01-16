@@ -99,7 +99,7 @@ extern "x86-interrupt" fn keyboard_interrupt_handler(_stack_frame: InterruptStac
 }
 
 extern "x86-interrupt" fn time_interrupt_handler(_stack_frame: InterruptStackFrame) {
-    print!(".");
+    //print!(".");
 
     //pics think we are busy processing the first timer interrupt and waits for the eoi signal to
     //send another
