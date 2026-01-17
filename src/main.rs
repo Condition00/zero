@@ -9,6 +9,8 @@ use core::panic::PanicInfo;
 use zero::println;
 extern crate alloc;
 
+use zero::task::{simple_executor::SimpleExecutor, Task};
+
 entry_point!(kernel_main);
 fn kernel_main(_boot_info: &'static BootInfo) -> ! {
     use x86_64::VirtAddr;
@@ -25,11 +27,24 @@ fn kernel_main(_boot_info: &'static BootInfo) -> ! {
 
     allocator::init_heap(&mut mapper, &mut frame_allocator).expect("heap inititalization failed");
 
+    let mut executor = SimpleExecutor::new();
+    executor.spawn(Task::new(example_task()));
+    executor.run();
+
     #[cfg(test)]
     test_main();
 
     //println!("It did not crash!");
     zero::hlt_loop();
+}
+
+async fn async_number() -> u32 {
+    42
+}
+
+async fn example_task() {
+    let number = async_number().await;
+    println!("async number: {}", number);
 }
 
 // This function is called on panic.
