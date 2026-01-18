@@ -29,9 +29,9 @@ fn kernel_main(_boot_info: &'static BootInfo) -> ! {
 
     allocator::init_heap(&mut mapper, &mut frame_allocator).expect("heap inititalization failed");
 
-    // Initialize filesystem
+    // Initialized filesystem
     zero::fs::init();
-    println!("Filesystem initialized");
+    println!("All Operations initialized\n");
 
     #[cfg(test)]
     test_main();
