@@ -13,6 +13,7 @@ pub mod interrupts;
 pub mod memory;
 pub mod serial;
 pub mod task;
+pub mod terminal;
 pub mod vg_buffer;
 extern crate alloc;
 
