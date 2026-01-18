@@ -5,7 +5,6 @@ use lazy_static::lazy_static;
 use x86_64::structures::idt::PageFaultErrorCode;
 use x86_64::structures::idt::{InterruptDescriptorTable, InterruptStackFrame};
 
-use crate::print;
 use pic8259::ChainedPics;
 use spin;
 //offsets from 32-47 to not overlap with the exceptions interrupts

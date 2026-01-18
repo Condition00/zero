@@ -18,7 +18,7 @@ fn kernel_main(_boot_info: &'static BootInfo) -> ! {
     use zero::memory;
     use zero::memory::BootInfoFrameAllocator;
 
-    use zero::{input, shell, terminal};
+    use zero::shell;
 
     println!("ZERO OS\n");
     zero::init();
