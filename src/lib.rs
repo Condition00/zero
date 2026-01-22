@@ -19,6 +19,7 @@ pub mod shell;
 pub mod syscall;
 pub mod task;
 pub mod terminal;
+pub mod userspace;
 pub mod vg_buffer;
 extern crate alloc;
 
