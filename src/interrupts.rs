@@ -42,6 +42,9 @@ lazy_static! {
         idt[InterruptIndex::Timer.as_usize()].set_handler_fn(time_interrupt_handler);
         idt[InterruptIndex::KeyBoard.as_usize()].set_handler_fn(keyboard_interrupt_handler);
         idt.page_fault.set_handler_fn(page_fault_handler);
+
+        //0x80 syscall
+        idt[0x80].set_handler_fn(crate::syscall::syscall_handler);
         idt
     };
 }

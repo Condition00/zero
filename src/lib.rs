@@ -16,6 +16,7 @@ pub mod interrupts;
 pub mod memory;
 pub mod serial;
 pub mod shell;
+pub mod syscall;
 pub mod task;
 pub mod terminal;
 pub mod vg_buffer;

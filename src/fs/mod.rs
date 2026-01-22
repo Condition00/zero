@@ -6,7 +6,6 @@ pub use vfs::{FileSystem, FileType, INode, OpenOptions, VFS};
 
 use alloc::sync::Arc;
 use spin::Mutex;
-
 static ROOT_FS: Mutex<Option<Arc<dyn FileSystem + Send + Sync>>> = Mutex::new(None);
 
 pub fn init() {
