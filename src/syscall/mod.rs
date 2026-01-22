@@ -1,67 +1,109 @@
 pub mod handlers;
 
-use crate::println;
-use x86_64::structures::idt::InterruptStackFrame;
+use crate::serial_println;
 
-// Syscall numbers (Linux-compatible)
 pub const SYS_READ: usize = 0;
 pub const SYS_WRITE: usize = 1;
 pub const SYS_OPEN: usize = 2;
 pub const SYS_CLOSE: usize = 3;
 pub const SYS_EXIT: usize = 60;
 
-#[derive(Debug)]
+// Syscall registers saved before interrupt
+#[derive(Debug, Clone, Copy)]
 #[repr(C)]
-pub struct SyscallFrame {
-    pub rax: u64, // syscall number
-    pub rdi: u64, // arg 1
-    pub rsi: u64, // arg 2
-    pub rdx: u64, // arg 3
-    pub r10: u64, // arg 4
-    pub r8: u64,  // arg 5
-    pub r9: u64,  // arg 6
+struct SyscallRegisters {
+    r15: u64,
+    r14: u64,
+    r13: u64,
+    r12: u64,
+    rbp: u64,
+    rbx: u64,
+    r11: u64,
+    r10: u64,
+    r9: u64,
+    r8: u64,
+    rdi: u64,
+    rsi: u64,
+    rdx: u64,
+    rcx: u64,
+    rax: u64,
 }
 
-pub extern "x86-interrupt" fn syscall_handler(mut stack_frame: InterruptStackFrame) {
-    // In a real implementation, you'd extract registers from the stack
-    // For now, we'll use inline assembly to read them
-
-    let syscall_num: u64;
-    let arg1: u64;
-    let arg2: u64;
-    let arg3: u64;
-
+#[unsafe(naked)]
+pub extern "C" fn syscall_handler() {
     unsafe {
-        core::arch::asm!(
-            "mov {}, rax",
-            "mov {}, rdi",
-            "mov {}, rsi",
-            "mov {}, rdx",
-            out(reg) syscall_num,
-            out(reg) arg1,
-            out(reg) arg2,
-            out(reg) arg3,
+        core::arch::naked_asm!(
+            // Save all registers in order (push goes high to low addresses)
+            "push rax",
+            "push rcx",
+            "push rdx",
+            "push rsi",
+            "push rdi",
+            "push r8",
+            "push r9",
+            "push r10",
+            "push r11",
+            "push rbx",
+            "push rbp",
+            "push r12",
+            "push r13",
+            "push r14",
+            "push r15",
+            
+            // RSP now points to our SyscallRegisters struct
+            "mov rdi, rsp",  // Pass pointer to registers as first argument
+            
+            "call {}",
+            
+            // RAX contains return value, don't restore it
+            "add rsp, 8",    // Skip r15 on stack
+            "pop r14",
+            "pop r13",
+            "pop r12",
+            "pop rbp",
+            "pop rbx",
+            "pop r11",
+            "pop r10",
+            "pop r9",
+            "pop r8",
+            "pop rdi",
+            "pop rsi",
+            "pop rdx",
+            "pop rcx",
+            "add rsp, 8",    // Skip the saved RAX (return value is in RAX already)
+            
+            "iretq",
+            
+            sym syscall_rust_handler,
         );
     }
+}
 
-    let result = match syscall_num as usize {
-        SYS_READ => handlers::sys_read(arg1 as usize, arg2 as *mut u8, arg3 as usize),
-        SYS_WRITE => handlers::sys_write(arg1 as usize, arg2 as *const u8, arg3 as usize),
-        SYS_EXIT => handlers::sys_exit(arg1 as i32),
+#[no_mangle]
+extern "C" fn syscall_rust_handler(regs: &SyscallRegisters) -> u64 {
+    serial_println!(
+        "[SYSCALL] num={}, args=({}, {}, {})",
+        regs.rax,
+        regs.rdi,
+        regs.rsi,
+        regs.rdx
+    );
+
+    let result = match regs.rax as usize {
+        SYS_READ => handlers::sys_read(regs.rdi as usize, regs.rsi as *mut u8, regs.rdx as usize),
+        SYS_WRITE => handlers::sys_write(regs.rdi as usize, regs.rsi as *const u8, regs.rdx as usize),
+        SYS_EXIT => handlers::sys_exit(regs.rdi as i32),
         _ => {
-            println!("Unknown syscall: {}", syscall_num);
+            serial_println!("[SYSCALL] Unknown syscall: {}", regs.rax);
             Err(())
         }
     };
 
-    // Return value in RAX (would need to modify stack frame)
     match result {
         Ok(val) => {
-            // Set RAX in stack frame to return value
-            // This requires more sophisticated stack manipulation
+            serial_println!("[SYSCALL] Returning: {}", val);
+            val as u64
         }
-        Err(_) => {
-            // Return error code
-        }
+        Err(_) => u64::MAX, // -1 as error
     }
 }

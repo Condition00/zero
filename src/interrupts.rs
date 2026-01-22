@@ -43,8 +43,12 @@ lazy_static! {
         idt[InterruptIndex::KeyBoard.as_usize()].set_handler_fn(keyboard_interrupt_handler);
         idt.page_fault.set_handler_fn(page_fault_handler);
 
-        //0x80 syscall
-        idt[0x80].set_handler_fn(crate::syscall::syscall_handler);
+        //0x80 syscall - using raw function pointer for naked function
+        unsafe {
+            idt[0x80]
+                .set_handler_addr(x86_64::VirtAddr::new(crate::syscall::syscall_handler as u64))
+                .set_privilege_level(x86_64::PrivilegeLevel::Ring3);
+        }
         idt
     };
 }

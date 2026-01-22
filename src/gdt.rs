@@ -69,9 +69,13 @@ pub fn init() {
 }
 
 pub fn user_code_selector() -> SegmentSelector {
-    GDT.1.user_code_selector
+    let mut selector = GDT.1.user_code_selector;
+    selector.set_rpl(x86_64::PrivilegeLevel::Ring3);
+    selector
 }
 
 pub fn user_data_selector() -> SegmentSelector {
-    GDT.1.user_data_selector
+    let mut selector = GDT.1.user_data_selector;
+    selector.set_rpl(x86_64::PrivilegeLevel::Ring3);
+    selector
 }

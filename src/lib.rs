@@ -20,6 +20,7 @@ pub mod syscall;
 pub mod task;
 pub mod terminal;
 pub mod userspace;
+pub mod userspace_test;
 pub mod vg_buffer;
 extern crate alloc;
 

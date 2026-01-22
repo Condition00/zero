@@ -8,8 +8,8 @@ extern crate alloc;
 
 use bootloader::{entry_point, BootInfo};
 use core::panic::PanicInfo;
-use zero::println;
 use zero::task::{executor::Executor, keyboard, Task};
+use zero::{hlt_loop, println};
 
 entry_point!(kernel_main);
 fn kernel_main(_boot_info: &'static BootInfo) -> ! {
@@ -35,10 +35,40 @@ fn kernel_main(_boot_info: &'static BootInfo) -> ! {
     #[cfg(test)]
     test_main();
 
+    //testing the userspace
+    println!("Testing userspace transition ...");
+    test_userspace(&mut mapper, &mut frame_allocator);
+    hlt_loop();
+
     let mut executor = Executor::new();
     executor.spawn(Task::new(keyboard::print_keypresses()));
     executor.spawn(Task::new(shell::shell()));
     executor.run();
+
+    fn test_userspace(
+        mapper: &mut impl x86_64::structures::paging::Mapper<x86_64::structures::paging::Size4KiB>,
+        frame_allocator: &mut impl x86_64::structures::paging::FrameAllocator<
+            x86_64::structures::paging::Size4KiB,
+        >,
+    ) -> ! {
+        use zero::userspace;
+        use zero::userspace_test;
+
+        println!("[KERNEL] Loading user program...");
+
+        let program = userspace_test::get_test_program();
+        let entry_point = userspace::load_user_program(program, mapper, frame_allocator)
+            .expect("Failed to load user program");
+
+        println!("[KERNEL] Allocating user stack...");
+        let user_stack = userspace::allocate_user_stack(mapper, frame_allocator)
+            .expect("Failed to allocate user stack");
+
+        println!("[KERNEL] Jumping to userspace!\n");
+        println!("======================================");
+
+        userspace::jump_to_userspace(entry_point, user_stack)
+    }
 }
 
 // This function is called on panic.

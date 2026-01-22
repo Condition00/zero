@@ -39,7 +39,9 @@ pub fn sys_exit(code: i32) -> Result<usize, ()> {
     println!("Process exited with code: {}", code);
     serial_println!("[SYSCALL] exit: {}", code);
 
-    // TODO: Actually terminate the process
-    // For now, just return to kernel
-    Ok(0)
+    // TODO: Actually terminate the process and schedule next one
+    // For now, just halt since we're in test mode before executor runs
+    loop {
+        x86_64::instructions::hlt();
+    }
 }

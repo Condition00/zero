@@ -1,5 +1,5 @@
 use crate::gdt;
-use crate::{println, serial_println};
+use crate::serial_println;
 use x86_64::structures::paging::{FrameAllocator, Mapper, Page, PageTableFlags, Size4KiB};
 use x86_64::VirtAddr;
 
@@ -15,25 +15,27 @@ pub fn jump_to_userspace(entry_point: VirtAddr, user_stack: VirtAddr) -> ! {
 
     unsafe {
         core::arch::asm!(
-                "cli",
-                "mov ds, {0:x}",         // Set data segment
-                "mov es, {0:x}",
-                "mov fs, {0:x}",
-                "mov gs, {0:x}",
+            // Set data segments first (while still in ring 0)
+            "mov ax, {0:x}",
+            "mov ds, ax",
+            "mov es, ax",
+            "mov fs, ax",
+            "mov gs, ax",
+            
+            // Build iretq stack frame
+            "push {0:r}",            // SS (stack segment) 
+            "push {1:r}",            // RSP (user stack pointer)
+            "push 0x200",            // RFLAGS (interrupt enable)
+            "push {2:r}",            // CS (code segment)
+            "push {3:r}",            // RIP (entry point)
+            
+            "iretq",
 
-                "push {0:r}",            // SS (stack segment)
-                "push {1:r}",            // RSP (user stack pointer)
-                "push 0x202",            // RFLAGS (enable interrupts bit)
-                "push {2:r}",            // CS (code segment)
-                "push {3:r}",            // RIP (entry point)
-
-                "iretq",                 // Return to ring 3!
-
-                in(reg) data_selector.0,
-                in(reg) user_stack.as_u64(),
-                in(reg) code_selector.0,
-                in(reg) entry_point.as_u64(),
-                options(noreturn)
+            in(reg) data_selector.0,
+            in(reg) user_stack.as_u64(),
+            in(reg) code_selector.0,
+            in(reg) entry_point.as_u64(),
+            options(noreturn)
         );
     }
 }
