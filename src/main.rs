@@ -22,6 +22,7 @@ fn kernel_main(_boot_info: &'static BootInfo) -> ! {
 
     println!("                                 ZERO OS\n");
     zero::init();
+    zero::arch::x86_64::gdt::test_user_segments();
 
     let phys_mem_offset = VirtAddr::new(_boot_info.physical_memory_offset);
     let mut mapper = unsafe { memory::init(phys_mem_offset) };
