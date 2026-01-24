@@ -5,7 +5,6 @@
 #![reexport_test_harness_main = "test_main"]
 #![feature(abi_x86_interrupt)]
 
-use crate::drivers::serial;
 use core::panic::PanicInfo;
 
 pub mod arch;

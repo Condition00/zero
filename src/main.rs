@@ -21,8 +21,7 @@ fn kernel_main(_boot_info: &'static BootInfo) -> ! {
     use x86_64::VirtAddr;
 
     println!("                                 ZERO OS\n");
-
-    zero::kernel::fs::init();
+    zero::init();
 
     let phys_mem_offset = VirtAddr::new(_boot_info.physical_memory_offset);
     let mut mapper = unsafe { memory::init(phys_mem_offset) };
@@ -31,7 +30,7 @@ fn kernel_main(_boot_info: &'static BootInfo) -> ! {
     allocator::init_heap(&mut mapper, &mut frame_allocator).expect("heap inititalization failed");
     println!("heap allocator initialized...");
 
-    zero::fs::init();
+    zero::kernel::fs::init();
     println!("ramfs initialized...\n");
 
     #[cfg(test)]

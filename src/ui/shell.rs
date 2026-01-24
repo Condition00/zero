@@ -1,6 +1,6 @@
-use crate::arch;
-use crate::fs;
-use crate::{input, terminal};
+use crate::arch::x86_64::cpu::reboot;
+use crate::kernel::fs;
+use crate::ui::{input, terminal};
 use alloc::format;
 use alloc::string::String;
 use alloc::vec::Vec;
@@ -64,7 +64,7 @@ fn cmd_echo(args: &[&str]) {
 
 fn cmd_reboot() {
     terminal::write("Rebooting...\n");
-    arch::reboot();
+    reboot();
 }
 
 fn cmd_ls(args: &[&str]) {

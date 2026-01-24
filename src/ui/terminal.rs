@@ -1,16 +1,16 @@
-use crate::vg_buffer::WRITER;
+use crate::drivers::vg_buffer::WRITER;
 use core::fmt::Write;
 use spin::Mutex;
 
 static INPUT_START: Mutex<usize> = Mutex::new(0);
 
 pub fn mark_input_start() {
-    let col = crate::vg_buffer::WRITER.lock().column();
+    let col = crate::drivers::vg_buffer::WRITER.lock().column();
     *INPUT_START.lock() = col;
 }
 
 pub fn can_backspace() -> bool {
-    let col = crate::vg_buffer::WRITER.lock().column();
+    let col = crate::drivers::vg_buffer::WRITER.lock().column();
     let start = *INPUT_START.lock();
     col > start
 }
@@ -36,5 +36,5 @@ pub fn backspace() {
         return;
     }
 
-    crate::vg_buffer::WRITER.lock().backspace();
+    crate::drivers::vg_buffer::WRITER.lock().backspace();
 }

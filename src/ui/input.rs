@@ -10,9 +10,9 @@ pub fn push_char(c: char) {
         '\n' => buf.push('\n'),
 
         '\x08' | '\x7f' => {
-            if crate::terminal::can_backspace() {
+            if crate::ui::terminal::can_backspace() {
                 buf.pop();
-                crate::terminal::backspace();
+                crate::ui::terminal::backspace();
             }
         }
 
@@ -30,6 +30,6 @@ pub async fn read_line() -> String {
                 return line;
             }
         }
-        crate::task::yield_now().await;
+        crate::kernel::task::yield_now().await;
     }
 }
