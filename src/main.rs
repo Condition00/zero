@@ -41,6 +41,22 @@ fn kernel_main(_boot_info: &'static BootInfo) -> ! {
     println!("[USERSPACE]: Jumping to Userspace...");
     let entry = zero::kernel::userspace::get_user_function_addr();
     let stack_top = zero::kernel::userspace::user_stack_top();
+    let stack_bottom = zero::kernel::userspace::user_stack_bottom();
+    unsafe {
+        //mappin code page
+        zero::kernel::userspace::map_user_code_page(&mut mapper, &mut frame_allocator, entry)
+            .expect("failed to map user code page");
+
+        //mappin stack page
+        zero::kernel::userspace::map_user_stack_pages(
+            &mut mapper,
+            &mut frame_allocator,
+            stack_bottom,
+            4096 * 4,
+        )
+        .expect("failed to map user stack pages")
+    };
+
     unsafe { zero::kernel::userspace::jump_to_userspace(entry, stack_top) }
 
     let mut executor = Executor::new();
