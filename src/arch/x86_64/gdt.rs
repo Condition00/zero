@@ -61,10 +61,10 @@ lazy_static! {
 }
 
 pub struct Selectors {
-    kernel_code_selector: SegmentSelector,
-    tss_selector: SegmentSelector,
-    user_data_selector: SegmentSelector,
-    user_code_selector: SegmentSelector,
+    pub kernel_code_selector: SegmentSelector,
+    pub tss_selector: SegmentSelector,
+    pub user_data_selector: SegmentSelector,
+    pub user_code_selector: SegmentSelector,
 }
 
 pub fn init() {

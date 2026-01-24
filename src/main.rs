@@ -37,6 +37,12 @@ fn kernel_main(_boot_info: &'static BootInfo) -> ! {
     #[cfg(test)]
     test_main();
 
+    //jumpin
+    println!("Jumping to the userspace.....");
+    let entry = zero::kernel::userspace::get_user_function_addr();
+    let stack_top = zero::kernel::userspace::user_stack_top();
+    unsafe { zero::kernel::userspace::jump_to_userspace(entry, stack_top) }
+
     let mut executor = Executor::new();
     executor.spawn(Task::new(keyboard::print_keypresses()));
     executor.spawn(Task::new(shell::shell()));
