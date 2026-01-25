@@ -69,6 +69,10 @@ extern "C" fn syscall_entry() {
         "push rcx",          // User RIP (saved by CPU)
         "push r11",          // User RFLAGS (saved by CPU)
 
+        "mov rcx, rdx",      // arg3: rdx -> rcx
+        "mov rdx, rsi",      // arg2: rsi -> rdx
+        "mov rsi, rdi",      // arg1: rdi -> rsi
+        "mov rdi, rax",
         // Call the Rust syscall handler
         // rax = syscall number, rdi = arg1, rsi = arg2, rdx = arg3
         "call {handler}",
