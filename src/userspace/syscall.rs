@@ -17,3 +17,69 @@ pub const SYS_CLEAR: u64 = 9;
 pub const SYS_REBOOT: u64 = 10;
 pub const SYS_EXIT: u64 = 11;
 pub const SYS_YIELD: u64 = 12;
+
+//raw syscall with 0 args
+#[inline(always)]
+unsafe fn syscall0(n: u64) -> u64 {
+    let ret: u64;
+    asm!(
+        "syscall",
+            in("rax") n,
+            lateout("rax") ret,
+            lateout("rcx") _,
+            lateout("r11") _,
+            options(nostack, preserves_flags)
+    );
+    ret
+}
+
+//raw syscall with 1 args
+#[inline(always)]
+unsafe fn syscall1(n: u64, arg1: u64) -> u64 {
+    let ret: u64;
+    asm!(
+            "syscall",
+            in("rax") n,
+            in("rdi") arg1,
+            lateout("rax") ret,
+            lateout("rcx") _,
+            lateout("r11") _,
+            options(nostack, preserves_flags)
+    );
+    ret
+}
+
+//raw syscall with 2 args
+#[inline(always)]
+unsafe fn syscall2(n: u64, arg1: u64, arg2: u64) -> u64 {
+    let ret: u64;
+    asm!(
+            "syscall",
+            in("rax") n,
+            in("rdi") arg1,
+            in("rsi") arg2,
+            lateout("rax") ret,
+            lateout("rcx") _,
+            lateout("r11") _,
+            options(nostack, preserves_flags)
+    );
+    ret
+}
+
+// raw syscall with 3 args
+#[inline(always)]
+unsafe fn syscall3(n: u64, arg1: u64, arg2: u64, arg3: u64) -> u64 {
+    let ret: u64;
+    asm!(
+        "syscall",
+        in("rax") n,
+        in("rdi") arg1,
+        in("rsi") arg2,
+        in("rdx") arg3,
+        lateout("rax") ret,
+        lateout("rcx") _,
+        lateout("r11") _,
+        options(nostack, preserves_flags)
+    );
+    ret
+}
