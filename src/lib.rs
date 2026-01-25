@@ -11,6 +11,7 @@ pub mod arch;
 pub mod drivers;
 pub mod kernel;
 pub mod ui;
+pub mod userspace;
 
 extern crate alloc;
 
