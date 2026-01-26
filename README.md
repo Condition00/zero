@@ -13,4 +13,4 @@ later figured out that separate memory address was to be allocated to the usersp
 completed the implementation of the syscalls from ring0 to ring3. Added the syscall handler with the basic functions (plannig to add more now) !important I forgot to add System Call Extentions. added some assembly to match the C calling convention. basically the foundation for user programs is running. 
 
 # Jan 27 :
-working on sysdeps with mlibc
+working on os sysdeps with a forked mlibc submodule
