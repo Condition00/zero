@@ -1,3 +1,0 @@
-[submodule "external/mlibc"]
-	path = external/mlibc
-	url = https://github.com/Condition00/mlibc.git
