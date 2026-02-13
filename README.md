@@ -17,3 +17,5 @@ working on os sysdeps with a forked mlibc submodule. integrated mlibc for projec
 
 # Feb 14 :
 learnt bit of assembly and will see how to write custom wrapper. removed the incomplete mlibc library
+
+added ps2 mouse support
