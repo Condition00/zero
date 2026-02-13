@@ -14,3 +14,6 @@ completed the implementation of the syscalls from ring0 to ring3. Added the sysc
 
 # Jan 27 :
 working on os sysdeps with a forked mlibc submodule. integrated mlibc for project but complete build was hard so installed only headers and now I have to write a minimal libc using these headers to run userprograms
+
+#Feb 14
+learnt bit of assembly and will see how to write custom wrapper. removed the incomplete mlibc library
