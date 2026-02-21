@@ -20,7 +20,7 @@ entry_point!(kernel_main);
 fn kernel_main(_boot_info: &'static BootInfo) -> ! {
     use x86_64::VirtAddr;
 
-    println!("                                 VITAP OS\n");
+    println!("                                    VITAP OS\n");
     zero::init();
     // zero::arch::x86_64::gdt::test_user_segments();
 
@@ -34,6 +34,8 @@ fn kernel_main(_boot_info: &'static BootInfo) -> ! {
     zero::kernel::fs::init();
     println!("ramfs initialized...");
 
+    println!("system drivers initialized..");
+    println!("");
     // zero::drivers::mouse::init();
     // println!("PS/2 mouse initialized...\n");
 
