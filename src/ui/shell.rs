@@ -1,4 +1,5 @@
-use crate::arch::x86_64::cpu::reboot;
+use crate::arch;
+use crate::arch::x86_64::cpu::{reboot, shutdown};
 use crate::kernel::fs;
 use crate::ui::{input, terminal};
 use alloc::format;
@@ -33,6 +34,7 @@ fn run_command(line: String) {
         "rm" => cmd_rm(&parts[1..]),
         "write" => cmd_write(&parts[1..]),
         "stat" => cmd_stat(&parts[1..]),
+        "shutdown" => cmd_shutdown(),
         _ => {
             terminal::write("command not found\n");
         }
@@ -52,6 +54,7 @@ fn cmd_help() {
     terminal::write("  rm <path>    - remove file or empty directory\n");
     terminal::write("  write <file> <text> - write text to file\n");
     terminal::write("  stat <path>  - show file/directory information\n");
+    terminal::write("  shutdown     - shuts the os down\n");
 }
 
 fn cmd_echo(args: &[&str]) {
@@ -65,6 +68,11 @@ fn cmd_echo(args: &[&str]) {
 fn cmd_reboot() {
     terminal::write("Rebooting...\n");
     reboot();
+}
+
+fn cmd_shutdown() {
+    terminal::write("Shutting Down");
+    shutdown()
 }
 
 fn cmd_ls(args: &[&str]) {

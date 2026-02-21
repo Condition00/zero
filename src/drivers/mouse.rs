@@ -156,11 +156,11 @@ fn handle_mouse_state(state: ps2_mouse::MouseState) {
 
     // Check button states
     if state.left_button_down() {
-        println!("🖱️  Left button pressed!");
+        println!("Left button pressed!");
     }
 
     if state.right_button_down() {
-        println!("🖱️  Right button pressed!");
+        println!("Right button pressed!");
     }
 
     // Check movement
@@ -168,6 +168,6 @@ fn handle_mouse_state(state: ps2_mouse::MouseState) {
     let y = state.get_y();
 
     if x != 0 || y != 0 {
-        println!("🖱️  Mouse moved: X={:+4}, Y={:+4}", x, y);
+        println!("Mouse moved: X={:+4}, Y={:+4}", x, y);
     }
 }
